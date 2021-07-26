@@ -8,144 +8,121 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
-    // Represent whether the lastly pressed key is numeric or not
+    // 마지막 키 숫자 여부
     var lastNumeric: Boolean = false
 
-    // If true, do not allow to add another DOT
+    // 마지막 키 점 여부
     var lastDot: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        //This call the parent constructor
         super.onCreate(savedInstanceState)
-        // This is used to align the xml view to this class
         setContentView(R.layout.activity_main)
     }
 
-    /**
-     * Appends the numeric Button.text to the TextView
-     */
+    // 숫자 입력
     fun onDigit(view: View) {
-        // text of button is appended to textView
+        // 텍스트에 숫자 추가
         tvInput.append((view as Button).text)
-
-        // Set the flag
         lastNumeric = true
     }
 
-    /**
-     * Append . to the TextView
-     */
+    // 점 입력
     fun onDecimalPoint(view: View) {
-
-        // If the last appeded value is numeric then appen(".") or don't.
         if (lastNumeric && !lastDot) {
             tvInput.append(".")
-            lastNumeric = false // Update the flag
-            lastDot = true // Update the flag
+            lastNumeric = false
+            lastDot = true
         }
     }
 
-    /**
-     * Append +,-,*,/ operators to the TextView as per the Button.Text
-     */
+    // 연산자 입력
     fun onOperator(view: View) {
         if (lastNumeric && !isOperatorAdded(tvInput.text.toString())) {
             tvInput.append((view as Button).text)
-            lastNumeric = false // Update the flag
-            lastDot = false    // Reset the DOT flag
+            lastNumeric = false
+            lastDot = false
         }
     }
 
-    /**
-     * Clear the TextView
-     */
+    // 텍스트 초기화
     fun onClear(view: View) {
         tvInput.text = ""
-        lastNumeric = false // Reset the flag
-        lastDot = false // Reset the flag
+        lastNumeric = false
+        lastDot = false
     }
 
-    /**
-     * Calculate the output
-     */
+    // 텍스트 계산
     fun onEqual(view: View) {
-        // If the last input is a number only, solution can be found.
+        // 마지막 입력이 숫자일 시 계산
         if (lastNumeric) {
-            // Read the textView value
+            // 텍스트 값 불러오기
             var value = tvInput.text.toString()
             var prefix = ""
             try {
-
-                // Here if the value starts with '-' then we will separate it and perform the calculation with value.
+                // 음수값으로 시작 시 구분
                 if (value.startsWith("-")) {
                     prefix = "-"
                     value = value.substring(1);
                 }
 
-                // If the inputValue contains the Division operator
+                // "/" 연산자 일 때
                 if (value.contains("/")) {
-                    // Will split the inputValue using Division operator
+                    // "/" 연산자로 텍스트 구분
                     val splitedValue = value.split("/")
 
-                    var one = splitedValue[0] // Value One
-                    val two = splitedValue[1] // Value Two
+                    var one = splitedValue[0] // 첫번째 값
+                    val two = splitedValue[1] // 두번째 값
 
-                    if (!prefix.isEmpty()) { // If the prefix is not empty then we will append it with first value i.e one.
+                    if (!prefix.isEmpty()) {
                         one = prefix + one
                     }
 
-                    /*Here as the value one and two will be calculated based on the operator and
-                    if the result contains the zero after decimal point will remove it.
-                    And display the result to TextView*/
+                    // 소수점 뒤에 0이 포함된 경우 제거
                     tvInput.text = removeZeroAfterDot((one.toDouble() / two.toDouble()).toString())
-                } else if (value.contains("*")) {
-                    // If the inputValue contains the Multiplication operator
-                    // Will split the inputValue using Multiplication operator
+                }
+                // "*" 연산자 일 때
+                else if (value.contains("*")) {
+                    // "*" 연산자로 텍스트 구분
                     val splitedValue = value.split("*")
 
-                    var one = splitedValue[0] // Value One
-                    val two = splitedValue[1] // Value Two
+                    var one = splitedValue[0] // 첫번째 값
+                    val two = splitedValue[1] // 두번째 값
 
-                    if (!prefix.isEmpty()) { // If the prefix is not empty then we will append it with first value i.e one.
+                    if (!prefix.isEmpty()) {
                         one = prefix + one
                     }
 
-                    /*Here as the value one and two will be calculated based on the operator and
-                    if the result contains the zero after decimal point will remove it.
-                    And display the result to TextView*/
+                    // 소수점 뒤에 0이 포함된 경우 제거
                     tvInput.text = removeZeroAfterDot((one.toDouble() * two.toDouble()).toString())
-                } else if (value.contains("-")) {
-
-                    // If the inputValue contains the Subtraction operator
-                    // Will split the inputValue using Subtraction operator
+                }
+                // "-" 연산자 일 때
+                else if (value.contains("-")) {
+                    // "-" 연산자로 텍스트 구분
                     val splitedValue = value.split("-")
 
-                    var one = splitedValue[0] // Value One
-                    val two = splitedValue[1] // Value Two
+                    var one = splitedValue[0] // 첫번째 값
+                    val two = splitedValue[1] // 두번째 값
 
-                    if (!prefix.isEmpty()) { // If the prefix is not empty then we will append it with first value i.e one.
+                    if (!prefix.isEmpty()) {
                         one = prefix + one
                     }
 
-                    /*Here as the value one and two will be calculated based on the operator and
-                    if the result contains the zero after decimal point will remove it.
-                    And display the result to TextView*/
+                    // 소수점 뒤에 0이 포함된 경우 제거
                     tvInput.text = removeZeroAfterDot((one.toDouble() - two.toDouble()).toString())
-                } else if (value.contains("+")) {
-                    // If the inputValue contains the Addition operator
-                    // Will split the inputValue using Addition operator
+                }
+                // "+" 연산자 일 때
+                else if (value.contains("+")) {
+                    // "+" 연산자로 텍스트 구분
                     val splitedValue = value.split("+")
 
-                    var one = splitedValue[0] // Value One
-                    val two = splitedValue[1] // Value Two
+                    var one = splitedValue[0] // 첫번째 값
+                    val two = splitedValue[1] // 두번째 값
 
-                    if (!prefix.isEmpty()) { // If the prefix is not empty then we will append it with first value i.e one.
+                    if (!prefix.isEmpty()) {
                         one = prefix + one
                     }
 
-                    /*Here as the value one and two will be calculated based on the operator and
-                    if the result contains the zero after decimal point will remove it.
-                    And display the result to TextView*/
+                    // 소수점 뒤에 0이 포함된 경우 제거
                     tvInput.text = removeZeroAfterDot((one.toDouble() + two.toDouble()).toString())
                 }
             } catch (e: ArithmeticException) {
@@ -154,16 +131,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * It is used to check whether any of the operator is used or not.
-     */
+    // 연산자 사용 여부
     private fun isOperatorAdded(value: String): Boolean {
-
-        /**
-         * Here first we will check that if the value starts with "-" then will ignore it.
-         * As it is the result value and perform further calculation.
-         */
-
+        // 텍스트가 "-"로 시작하는 경우 무시
         return if (value.startsWith("-")) {
             false
         } else {
@@ -174,17 +144,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Remove the zero after decimal point
-     */
+    // "." 뒤의 0 제거
     private fun removeZeroAfterDot(result: String): String {
-
         var value = result
-
         if (result.contains(".0")) {
             value = result.substring(0, result.length - 2)
         }
-
         return value
     }
 }
